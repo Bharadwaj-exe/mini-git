@@ -1,4 +1,4 @@
-package main.java.minigit.objects;
+package minigit.objects;
 
 public class GitObject {
     

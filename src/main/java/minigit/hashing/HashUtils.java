@@ -1,4 +1,4 @@
-package main.java.minigit.hashing;
+package minigit.hashing;
 
 public class HashUtils {
     
