@@ -76,6 +76,18 @@ public class ObjectStore {
         return object;
     }
 
+    // Resolves a branch name or (abbreviated) commit hash to a full commit hash.
+    public String resolveCommit(Repository repository, String revision) {
+        String branchCommit = repository.readBranch(revision);
+        if (branchCommit != null) {
+            return branchCommit;
+        }
+        if (!HashUtils.isHexPrefix(revision.toLowerCase())) {
+            throw new MiniGitException("'" + revision + "' is not a branch or commit");
+        }
+        return read(revision, Commit.TYPE).getHash();
+    }
+
     // Expands an abbreviated hash (at least 4 characters) to the full 40-character hash.
     public String resolve(String hashOrPrefix) {
         String prefix = hashOrPrefix.toLowerCase();

@@ -1,7 +1,12 @@
 package minigit.repository;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import minigit.exceptions.MiniGitException;
 import minigit.filesystem.FileUtils;
@@ -12,6 +17,7 @@ public class Repository {
     public static final String DEFAULT_BRANCH = "main";
 
     private static final String HEAD_REF_PREFIX = "ref: refs/heads/";
+    private static final Pattern VALID_BRANCH_NAME = Pattern.compile("[A-Za-z0-9_][A-Za-z0-9._-]*");
 
     private final Path rootDirectory;
     private final Path miniGitDirectory;
@@ -114,5 +120,47 @@ public class Repository {
 
     public void writeBranch(String name, String commitHash) {
         FileUtils.writeString(getHeadsDirectory().resolve(name), commitHash + "\n");
+    }
+
+    public boolean branchExists(String name) {
+        return readBranch(name) != null;
+    }
+
+    public void deleteBranch(String name) {
+        try {
+            Files.delete(getHeadsDirectory().resolve(name));
+        } catch (IOException e) {
+            throw new MiniGitException("could not delete branch '" + name + "'", e);
+        }
+    }
+
+    public List<String> listBranches() {
+        List<String> branches = new ArrayList<>();
+        if (!Files.isDirectory(getHeadsDirectory())) {
+            return branches;
+        }
+        try (Stream<Path> files = Files.list(getHeadsDirectory())) {
+            files.filter(Files::isRegularFile)
+                .map(file -> file.getFileName().toString())
+                .sorted()
+                .forEach(branches::add);
+        } catch (IOException e) {
+            throw new MiniGitException("could not list branches", e);
+        }
+        return branches;
+    }
+
+    public void setHeadToBranch(String name) {
+        FileUtils.writeString(getHeadFile(), HEAD_REF_PREFIX + name + "\n");
+    }
+
+    public void setHeadDetached(String commitHash) {
+        FileUtils.writeString(getHeadFile(), commitHash + "\n");
+    }
+
+    public static void validateBranchName(String name) {
+        if (!VALID_BRANCH_NAME.matcher(name).matches()) {
+            throw new MiniGitException("'" + name + "' is not a valid branch name");
+        }
     }
 }

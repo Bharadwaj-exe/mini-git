@@ -4,7 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import minigit.cli.AddCommand;
+import minigit.cli.BranchCommand;
 import minigit.cli.CatFileCommand;
+import minigit.cli.CheckoutCommand;
 import minigit.cli.Command;
 import minigit.cli.CommitCommand;
 import minigit.cli.HashObjectCommand;
@@ -25,6 +27,8 @@ public class Main {
         COMMANDS.put("commit", new CommitCommand());
         COMMANDS.put("log", new LogCommand());
         COMMANDS.put("status", new StatusCommand());
+        COMMANDS.put("branch", new BranchCommand());
+        COMMANDS.put("checkout", new CheckoutCommand());
     }
 
     public static void main(String[] args) {
