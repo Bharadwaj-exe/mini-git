@@ -10,6 +10,7 @@ import minigit.cli.CommitCommand;
 import minigit.cli.HashObjectCommand;
 import minigit.cli.InitCommand;
 import minigit.cli.LogCommand;
+import minigit.cli.StatusCommand;
 import minigit.exceptions.MiniGitException;
 
 public class Main {
@@ -23,6 +24,7 @@ public class Main {
         COMMANDS.put("add", new AddCommand());
         COMMANDS.put("commit", new CommitCommand());
         COMMANDS.put("log", new LogCommand());
+        COMMANDS.put("status", new StatusCommand());
     }
 
     public static void main(String[] args) {
