@@ -3,7 +3,9 @@ package minigit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import minigit.cli.CatFileCommand;
 import minigit.cli.Command;
+import minigit.cli.HashObjectCommand;
 import minigit.cli.InitCommand;
 import minigit.exceptions.MiniGitException;
 
@@ -13,6 +15,8 @@ public class Main {
 
     static {
         COMMANDS.put("init", new InitCommand());
+        COMMANDS.put("hash-object", new HashObjectCommand());
+        COMMANDS.put("cat-file", new CatFileCommand());
     }
 
     public static void main(String[] args) {
