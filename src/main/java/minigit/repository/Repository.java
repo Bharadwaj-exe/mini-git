@@ -69,4 +69,8 @@ public class Repository {
     public Path getHeadFile() {
         return miniGitDirectory.resolve("HEAD");
     }
+
+    public Path getIndexFile() {
+        return miniGitDirectory.resolve("index");
+    }
 }
