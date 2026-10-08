@@ -11,6 +11,8 @@ public class Repository {
     public static final String MINIGIT_DIRECTORY_NAME = ".minigit";
     public static final String DEFAULT_BRANCH = "main";
 
+    private static final String HEAD_REF_PREFIX = "ref: refs/heads/";
+
     private final Path rootDirectory;
     private final Path miniGitDirectory;
 
@@ -47,7 +49,7 @@ public class Repository {
         }
         FileUtils.createDirectories(getObjectsDirectory());
         FileUtils.createDirectories(getHeadsDirectory());
-        FileUtils.writeString(getHeadFile(), "ref: refs/heads/" + DEFAULT_BRANCH + "\n");
+        FileUtils.writeString(getHeadFile(), HEAD_REF_PREFIX + DEFAULT_BRANCH + "\n");
     }
 
     public Path getRootDirectory() {
@@ -72,5 +74,45 @@ public class Repository {
 
     public Path getIndexFile() {
         return miniGitDirectory.resolve("index");
+    }
+
+    // The branch HEAD points at, or null when HEAD is detached at a commit.
+    public String getCurrentBranch() {
+        String head = FileUtils.readString(getHeadFile()).trim();
+        if (head.startsWith(HEAD_REF_PREFIX)) {
+            return head.substring(HEAD_REF_PREFIX.length());
+        }
+        return null;
+    }
+
+    // The commit HEAD resolves to, or null on a branch that has no commits yet.
+    public String getHeadCommit() {
+        String branch = getCurrentBranch();
+        if (branch != null) {
+            return readBranch(branch);
+        }
+        return FileUtils.readString(getHeadFile()).trim();
+    }
+
+    // Moves the current branch (or the detached HEAD) to a new commit.
+    public void updateHead(String commitHash) {
+        String branch = getCurrentBranch();
+        if (branch != null) {
+            writeBranch(branch, commitHash);
+        } else {
+            FileUtils.writeString(getHeadFile(), commitHash + "\n");
+        }
+    }
+
+    public String readBranch(String name) {
+        Path file = getHeadsDirectory().resolve(name);
+        if (!Files.isRegularFile(file)) {
+            return null;
+        }
+        return FileUtils.readString(file).trim();
+    }
+
+    public void writeBranch(String name, String commitHash) {
+        FileUtils.writeString(getHeadsDirectory().resolve(name), commitHash + "\n");
     }
 }

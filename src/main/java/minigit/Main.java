@@ -6,8 +6,10 @@ import java.util.Map;
 import minigit.cli.AddCommand;
 import minigit.cli.CatFileCommand;
 import minigit.cli.Command;
+import minigit.cli.CommitCommand;
 import minigit.cli.HashObjectCommand;
 import minigit.cli.InitCommand;
+import minigit.cli.LogCommand;
 import minigit.exceptions.MiniGitException;
 
 public class Main {
@@ -19,6 +21,8 @@ public class Main {
         COMMANDS.put("hash-object", new HashObjectCommand());
         COMMANDS.put("cat-file", new CatFileCommand());
         COMMANDS.put("add", new AddCommand());
+        COMMANDS.put("commit", new CommitCommand());
+        COMMANDS.put("log", new LogCommand());
     }
 
     public static void main(String[] args) {

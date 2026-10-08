@@ -5,6 +5,7 @@ import java.io.IOException;
 import minigit.exceptions.MiniGitException;
 import minigit.objects.ObjectStore;
 import minigit.objects.StoredObject;
+import minigit.objects.Tree;
 import minigit.repository.Repository;
 
 // minigit cat-file (-t | -s | -p) <object>
@@ -35,6 +36,13 @@ public class CatFileCommand implements Command {
     }
 
     private void printContent(StoredObject object) {
+        if (object.getType().equals(Tree.TYPE)) {
+            for (Tree.Entry entry : Tree.parse(object.getContent()).getEntries()) {
+                String mode = String.format("%6s", entry.getMode()).replace(' ', '0');
+                System.out.println(mode + " " + entry.getObjectType() + " " + entry.getHash() + "\t" + entry.getName());
+            }
+            return;
+        }
         try {
             System.out.write(object.getContent());
             System.out.flush();
