@@ -1,20 +1,35 @@
 # MiniGit
 
+[![tests](https://github.com/Bharadwaj-exe/mini-git/actions/workflows/ci.yml/badge.svg)](https://github.com/Bharadwaj-exe/mini-git/actions/workflows/ci.yml)
+
 A small version control system written from scratch in plain Java, following Git's own design: content-addressed objects, a staging area, commits that form a history, and branches.
 
 MiniGit stores its data in a `.minigit` directory. Blobs, trees and commits use Git's exact object format, so their hashes match the ones Git computes for the same content, and `git --git-dir=.minigit log` can read a MiniGit history.
 
 ## Build
 
-Requires JDK 11 or newer. There are no dependencies.
+Requires JDK 11 or newer. MiniGit itself has no dependencies; Maven is used only to build and run the tests.
+
+```bash
+mvn package            # builds target/minigit.jar and runs the tests
+java -jar target/minigit.jar <command> [<args>]
+```
+
+Without Maven:
 
 ```bash
 javac -d out $(find src/main/java -name '*.java')
-```
-
-```bash
 java -cp out minigit.Main <command> [<args>]
 ```
+
+## Tests
+
+```bash
+mvn test                      # unit tests
+./scripts/interop-test.sh     # end-to-end check against real Git (run after mvn package)
+```
+
+The unit tests pin blob and tree hashes to values produced by real Git. The interop script builds a two-branch history with MiniGit, then checks that `git` reads every object, counts the same commits, and computes the same tree hash for the same files. Both run in CI on JDK 11 and 21.
 
 ## Commands
 
@@ -87,4 +102,6 @@ src/main/java/minigit/
 ├── hashing/           SHA-1 and hex helpers
 ├── filesystem/        file I/O helpers
 └── exceptions/        MiniGitException for user-facing errors
+src/test/java/minigit/ unit tests (object format, repository layout)
+scripts/interop-test.sh end-to-end check against real Git
 ```
